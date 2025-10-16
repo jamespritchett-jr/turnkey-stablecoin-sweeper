@@ -1,0 +1,39 @@
+cat > .gitignore << 'EOF'
+# Environment variables - ALL variations
+.env
+.env.*
+.env.local
+.env.bak
+.env.backup
+.env.production
+.env.development
+*.env
+*.bak
+*.backup
+*backup*
+*.old
+
+# Dependencies
+node_modules/
+
+# User data (contains real wallet addresses)
+users.json
+*.json.bak
+
+# Build outputs
+dist/
+build/
+
+# System files
+.DS_Store
+*.log
+*.swp
+*~
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+EOF

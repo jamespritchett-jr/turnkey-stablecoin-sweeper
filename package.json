@@ -1,0 +1,21 @@
+{
+  "name": "turnkey-stablecoin-sweeper",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "provision": "node src/provision.mjs",
+    "sweep": "node src/watch-and-sweep.mjs",
+    "apply:deposit": "node scripts/apply-policies.mjs deposit",
+    "apply:omnibus": "node scripts/apply-policies.mjs omnibus",
+    "start": "node src/watch-and-sweep.mjs"
+  },
+  "dependencies": {
+    "@turnkey/api-key-stamper": "^0.5.0",
+    "@turnkey/http": "^3.13.1",
+    "@turnkey/viem": "^0.14.8",
+    "cross-fetch": "^4.1.0",
+    "dotenv": "^16.6.1",
+    "viem": "^2.38.2"
+  }
+}

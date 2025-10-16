@@ -1,0 +1,24 @@
+{
+  "name": "DepositWallet_StablecoinSweepOnly",
+  "description": "Allow only ERC-20 sweeps (USDC/USDT) to omnibus; deny all else.",
+  "is_enabled": true,
+  "statements": [
+    {
+      "effect": "ALLOW",
+      "when": {
+        "action": "SIGN_TRANSACTION",
+        "evm": {
+          "chain_id_eq": "${CHAIN_ID}",
+          "erc20_transfer": {
+            "token_in": ["${USDC_ADDRESS}", "${USDT_ADDRESS}"],
+            "to_eq": "${OMNIBUS_ADDRESS}"
+          }
+        }
+      }
+    },
+    {
+      "effect": "DENY",
+      "when": { "action": "SIGN_TRANSACTION" }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "Omnibus_StrictDeny",
+  "description": "Omnibus cannot send anywhere by default.",
+  "is_enabled": true,
+  "statements": [
+    { "effect": "DENY", "when": { "action": "SIGN_TRANSACTION" } }
+  ]
+}
