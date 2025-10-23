@@ -80,10 +80,18 @@ async function sweepOne(user) {
       const tokenInfo = TOKEN_INFO[token.toLowerCase()];
       const tokenSymbol = tokenInfo?.symbol || "TOKEN";
       
+      // Format amount (assuming 6 decimals for USDC/USDT)
+      const decimals = 6; // USDC and USDT use 6 decimals
+      const amount = Number(bal) / Math.pow(10, decimals);
+      const formattedAmount = amount.toLocaleString('en-US', { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 6 
+      });
+      
       // Check ETH balance for gas
       const ethBalance = await publicClient.getBalance({ address: user.address });
       if (ethBalance === 0n) {
-        console.log(`[${timestamp()}] ⚠️  ${user.userId} (${user.address}): Cannot sweep ${tokenSymbol} - wallet needs ETH for gas fees`);
+        console.log(`[${timestamp()}] ⚠️  ${user.userId} (${user.address}): Cannot sweep ${formattedAmount} ${tokenSymbol} - wallet needs ETH for gas fees`);
         continue;
       }
 
@@ -101,17 +109,32 @@ async function sweepOne(user) {
       const walletClient = await viemFor(user.orgId, user.address);
       const hash = await walletClient.sendTransaction(unsigned);
       
-      const tokenDisplay = tokenInfo ? `${tokenInfo.symbol} (${token})` : token;
-      console.log(`[${timestamp()}] ✅ [SWEEP] ${user.userId} (${user.address}) sent ${tokenDisplay} to omnibus: ${hash}`);
+      console.log(`[${timestamp()}] ✅ [SWEEP] ${user.userId} (${user.address}): swept ${formattedAmount} ${tokenSymbol} to omnibus: ${hash}`);
       
     } catch (error) {
       const tokenInfo = TOKEN_INFO[token.toLowerCase()];
       const tokenSymbol = tokenInfo?.symbol || "TOKEN";
       
+      // Try to get amount for error messages
+      let amountStr = "";
+      try {
+        const bal = await publicClient.readContract({
+          address: token,
+          abi: erc20,
+          functionName: "balanceOf",
+          args: [user.address]
+        });
+        const decimals = 6;
+        const amount = Number(bal) / Math.pow(10, decimals);
+        amountStr = ` (${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 })} ${tokenSymbol})`;
+      } catch {
+        // If balance check fails, just skip amount
+      }
+      
       // Parse common errors into user-friendly messages
       if (error.message?.includes("gas required exceeds allowance") || 
           error.details?.includes("gas required exceeds allowance")) {
-        console.log(`[${timestamp()}] ⚠️  ${user.userId} (${user.address}): Cannot sweep ${tokenSymbol} - wallet needs ETH for gas fees`);
+        console.log(`[${timestamp()}] ⚠️  ${user.userId} (${user.address}): Cannot sweep${amountStr} - wallet needs ETH for gas fees`);
       } else if (error.message?.includes("insufficient funds")) {
         console.log(`[${timestamp()}] ⚠️  ${user.userId} (${user.address}): Insufficient ${tokenSymbol} balance to sweep`);
       } else if (error.message?.includes("nonce")) {
@@ -133,7 +156,7 @@ async function loop() {
   }).join(", ");
   
   console.log(`\n${"=".repeat(80)}`);
-  console.log(`Turnkey Stablecoin Sweeper`);
+  console.log(`         Turnkey Stablecoin Sweeper`);
   console.log(`${"=".repeat(80)}`);
   console.log(`Network: ${chain.name} (Chain ID: ${chain.id})`);
   console.log(`Omnibus: ${OMNIBUS}`);
