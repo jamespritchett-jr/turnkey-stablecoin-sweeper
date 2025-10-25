@@ -40,13 +40,13 @@ This implementation demonstrates a production-ready stablecoin deposit managemen
 ### Three-Layer Design
 
 1. **Wallet Layer**: Creates isolated deposit wallets for each user via Turnkey API
-2. **Policy Layer**: Enforces security rules in Turnkey's secure enclaves (HSMs)
+2. **Policy Layer**: Enforces security rules in Turnkey's secure enclaves (TEEs)
 3. **Automation Layer**: Monitors balances and triggers automatic sweeps
 
 ## 🔑 Key Features
 
 ### Infrastructure-Level Security
-- **Private keys stored in Hardware Security Modules (HSMs)** - Never exposed to application
+- **Private keys stored in TEEs - Never exposed to application
 - **Policy enforcement in secure enclaves** - Cannot be bypassed even with compromised credentials
 - **Cryptographically guaranteed restrictions** - Not dependent on application code
 
@@ -263,7 +263,7 @@ stablecoin-deposit-sweeper/
 ### ✅ Requirement 1: Per-User Deposit Wallets
 **Implementation**: `src/provision.mjs`
 - Uses Turnkey's `createWallet` API
-- Private keys generated and stored in Turnkey's HSMs
+- Private keys generated and stored in Turnkey's TEEs
 - Each user gets isolated wallet
 - Keys never exposed to application
 
@@ -389,7 +389,7 @@ This ensures compatibility with MetaMask, Ledger, and other standard wallets.
 2. **Request created** and signed by stamper
 3. **Sent to Turnkey API** with transaction details
 4. **Turnkey validates** signature and policy
-5. **If approved**: Turnkey signs with private key in HSM
+5. **If approved**: Turnkey signs with private key in TEE
 6. **Signed transaction** returned to client
 7. **Client broadcasts** to blockchain
 
@@ -405,7 +405,7 @@ Private Key → Encrypted → Database
 
 **Turnkey Approach** (Secure):
 ```
-Private Key → Generated in HSM → Never Leaves
+Private Key → Generated in TEE → Never Leaves
 ✅ Keys only in hardware
 ✅ Cannot be extracted (physically impossible)
 ✅ Policies enforced where keys are stored
