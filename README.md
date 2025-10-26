@@ -40,7 +40,7 @@ This implementation demonstrates a production-ready stablecoin deposit managemen
 ### Three-Layer Design
 
 1. **Wallet Layer**: Creates isolated deposit wallets for each user via Turnkey API
-2. **Policy Layer**: Enforces security rules in Turnkey's secure enclaves (TEEs)
+2. **Policy Layer**: Enforces security rules in Turnkey's Trusted Execution Environments (TEEs)
 3. **Automation Layer**: Monitors balances and triggers automatic sweeps
 
 ## 🔑 Key Features
